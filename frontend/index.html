@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPOptima: The system of record for judgment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14171B;
+    --ink2:#1B1F25;
+    --inkline:#2B2F36;
+    --paper:#E8E4D8;
+    --paperdim:#DCD7C8;
+    --paperline:#C4BEAC;
+    --graphite:#54575C;
+    --texthi:#F2F0E8;
+    --textmid:#B9B6AC;
+    --sealred:#9A3226;
+    --sealgreen:#2C5C40;
+    --sealbrass:#8A6A1E;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--texthi);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px;}
+
+  /* NAV */
+  nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 0;border-bottom:1px solid var(--inkline);
+  }
+  .logo{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;
+    letter-spacing:0.01em;color:var(--texthi);
+  }
+  .logo span{color:var(--textmid);font-weight:400;}
+  .navlinks{display:flex;gap:32px;font-size:14px;color:var(--textmid);}
+  .navlinks a{color:var(--textmid);text-decoration:none;}
+  .navlinks a:hover{color:var(--texthi);}
+  .ctaghost{
+    border:1px solid var(--inkline);color:var(--texthi);
+    padding:8px 16px;border-radius:var(--radius);font-size:13px;
+    text-decoration:none;font-family:'IBM Plex Mono',monospace;
+  }
+
+  /* HERO */
+  .hero{padding:76px 0 40px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.12em;
+    color:var(--sealbrass);text-transform:uppercase;margin-bottom:18px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::before{content:"";width:16px;height:1px;background:var(--sealbrass);display:inline-block;}
+  h1{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;
+    font-size:clamp(32px,4.4vw,52px);line-height:1.08;letter-spacing:-0.01em;
+    margin:0 0 20px;max-width:760px;
+  }
+  .sub{
+    font-size:17px;line-height:1.55;color:var(--textmid);max-width:560px;margin:0 0 34px;
+  }
+  .herocontrols{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px;}
+  
+  /* Buttons & Inputs */
+  .btnprimary{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;
+    background:var(--texthi);color:var(--ink);border:none;
+    padding:10px 18px;border-radius:var(--radius);cursor:pointer;
+    letter-spacing:0.02em;
+  }
+  .btnprimary:disabled{opacity:0.35;cursor:not-allowed;}
+  .btnsecondary{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;
+    background:transparent;color:var(--textmid);border:1px solid var(--inkline);
+    padding:10px 18px;border-radius:var(--radius);cursor:pointer;
+  }
+  .btnsecondary:hover{color:var(--texthi);border-color:var(--texthi);}
+  .btnsecondary:disabled{opacity:0.35;cursor:not-allowed;border-color:var(--inkline);color:var(--textmid);}
+  
+  .determinismnote{
+    font-size:12.5px;color:var(--textmid);margin:14px 0 44px;font-family:'IBM Plex Mono',monospace;
+    max-width:560px;line-height:1.6;
+  }
+  .determinismnote b{color:var(--texthi);font-weight:500;}
+
+  /* LEDGER */
+  .ledgershell{
+    background:var(--paper);color:var(--ink);border-radius:6px;
+    padding:0;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,0.6);
+  }
+  .ledgertop{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 28px;border-bottom:1px solid var(--paperline);
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--graphite);
+  }
+  .ledgerid{color:var(--ink);font-weight:600;}
+  .ledgerbody{padding:8px 28px 28px;}
+
+  .step{
+    display:grid;grid-template-columns:44px 1fr auto;gap:18px;
+    padding:22px 0;border-bottom:1px dashed var(--paperline);
+  }
+  .step:last-child{border-bottom:none;}
+  .stepnum{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--graphite);
+    padding-top:2px;
+  }
+  .stepmain{min-width:0;}
+  .steptitle{
+    font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;
+    margin:0 0 6px;color:var(--ink);
+  }
+  .stepdetail{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.75;
+    color:var(--graphite);white-space:pre-wrap;
+  }
+  .stepdetail .k{color:var(--ink);}
+  .rulebox{
+    margin-top:10px;background:rgba(0,0,0,0.04);border-left:3px solid var(--graphite);
+    padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;
+    color:var(--ink);line-height:1.7;
+  }
+
+  .stamp{
+    align-self:flex-start;justify-self:end;
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11.5px;
+    letter-spacing:0.08em;text-transform:uppercase;
+    border:2px solid currentColor;border-radius:3px;
+    padding:6px 10px;white-space:nowrap;
+    transform:rotate(-4deg);
+  }
+  .stamp.extracted{color:var(--graphite);}
+  .stamp.rule{color:var(--sealbrass);}
+  .stamp.approved{color:var(--sealgreen);}
+  .stamp.routed{color:var(--sealbrass);}
+  .stamp.sealed{color:var(--ink);}
+
+  .ledgerfooter{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+    padding:16px 28px;background:var(--paperdim);border-top:1px solid var(--paperline);
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--graphite);
+  }
+  .hash{color:var(--ink);}
+
+  /* CAPTIONS */
+  .captionrow{
+    display:flex;gap:40px;flex-wrap:wrap;margin-top:26px;padding-top:26px;
+    border-top:1px solid var(--inkline);
+  }
+  .captioncol{max-width:280px;}
+  .captioncol h4{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-transform:uppercase;
+    letter-spacing:0.08em;color:var(--textmid);margin:0 0 8px;
+  }
+  .captioncol p{font-size:13.5px;line-height:1.6;color:var(--textmid);margin:0;}
+  .captioncol p b{color:var(--texthi);font-weight:500;}
+
+  footer{padding:40px 0 60px;text-align:center;color:var(--textmid);font-size:12px;font-family:'IBM Plex Mono',monospace;}
+
+  /* ANIMATIONS */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="logo">BPOPTIMA <span>/ GroundSet</span></div>
+    <div class="navlinks">
+      <a href="#">Product</a>
+      <a href="#">Security</a>
+      <a href="#">Company</a>
+    </div>
+    <a class="ctaghost" href="#">Request access →</a>
+  </nav>
+
+  <section class="hero">
+    <div class="eyebrow">The system of record for judgment</div>
+    <h1>Every decision traces back<br>to a rule your team wrote.</h1>
+    <p class="sub">GroundSet reads evidence into structured data and applies your own deterministic rules. Nothing is inferred, nothing is invented. Below is a live connection to our AI extraction pipeline.</p>
+
+    <!-- Upload Controls -->
+    <div class="herocontrols" style="margin-bottom: 24px;">
+      <label for="evidenceFile" style="font-family:'IBM Plex Mono',monospace; font-size: 13px; color: var(--textmid); border: 1px dashed var(--inkline); padding: 12px 18px; border-radius: var(--radius); cursor: pointer; display: inline-block;">
+        + Upload Evidence (PDF/TXT/IMG)
+      </label>
+      <input type="file" id="evidenceFile" accept=".txt,.pdf,.png,.jpg,.jpeg" style="display: none;" />
+      <span id="fileName" style="font-family:'IBM Plex Mono',monospace; font-size: 13px; color: var(--texthi); margin-left: 12px;">No file selected</span>
+    </div>
+
+    <!-- Run Controls -->
+    <div class="herocontrols" style="margin-bottom:0;">
+      <button class="btnprimary" id="runBtn" disabled>Run the trace →</button>
+      <button class="btnsecondary" id="againBtn" disabled>Run again, same input</button>
+    </div>
+    
+    <div class="determinismnote" id="detNote">Upload a file to begin the deterministic trace.</div>
+
+    <!-- Ledger UI -->
+    <div class="ledgershell">
+      <div class="ledgertop">
+        <div>CASE <span class="ledgerid" id="caseId">--</span></div>
+        <div id="runCount">run 0</div>
+      </div>
+      <div class="ledgerbody" id="ledgerBody">
+        <!-- Trace steps inject here -->
+      </div>
+      <div class="ledgerfooter">
+        <div>hash <span class="hash" id="hashVal">(run the trace to generate)</span></div>
+        <div id="tsVal">(no runs yet)</div>
+      </div>
+    </div>
+
+    <div class="captionrow">
+      <div class="captioncol">
+        <h4>What just happened</h4>
+        <p>The model's only job was <b>step 01</b>, turning documents and photos into structured fields. Every decision after that came from <b>your</b> rule, stated in your language, version controlled and dated.</p>
+      </div>
+      <div class="captioncol">
+        <h4>Why no chat box</h4>
+        <p>A generative interface would answer differently each time you asked. This won't. <b>Run it again</b>: same evidence, same rule, same outcome. Only the audit hash changes, because it's a new event in the ledger.</p>
+      </div>
+      <div class="captioncol">
+        <h4>Where this goes</h4>
+        <p>In production, this trace exports directly into <b>your</b> GRC or case system, with the rule version and evidence attached, the same object your auditor sees eighteen months later.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>BPOptima · GroundSet reads evidence, applies your rules, records the trail.</footer>
+</div>
+
+<script>
+let runNum = 0;
+let currentFile = null;
+// Generate a random case ID for realism on load
+const caseId = "CR-" + Math.floor(10000 + Math.random() * 90000); 
+
+const ledgerBody = document.getElementById('ledgerBody');
+const runBtn = document.getElementById('runBtn');
+const againBtn = document.getElementById('againBtn');
+const caseIdEl = document.getElementById('caseId');
+const hashVal = document.getElementById('hashVal');
+const tsVal = document.getElementById('tsVal');
+const runCount = document.getElementById('runCount');
+const detNote = document.getElementById('detNote');
+const fileInput = document.getElementById('evidenceFile');
+const fileNameDisplay = document.getElementById('fileName');
+
+// Set initial Case ID
+caseIdEl.textContent = caseId;
+
+// Handle File Selection
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length > 0) {
+    currentFile = e.target.files[0];
+    fileNameDisplay.textContent = currentFile.name;
+    runBtn.disabled = false;
+    
+    // Reset the UI
+    runNum = 0;
+    runCount.textContent = 'run 0';
+    hashVal.textContent = '(run the trace to generate)';
+    tsVal.textContent = '(no runs yet)';
+    ledgerBody.innerHTML = '';
+    detNote.innerHTML = 'File loaded. Click <b>Run the trace</b> to process through the real backend.';
+    againBtn.disabled = true;
+  }
+});
+
+// Format JSON object or string nicely for the ledger
+function formatDetail(detailObj) {
+  if (!detailObj) return '';
+
+  if (typeof detailObj === 'string') return `<span class="k">${detailObj}</span>`;
+  return Object.entries(detailObj).map(([key, val]) => 
+    `<span class="k">${key}:</span> ${val}`
+  ).join('\n');
+}
+
+// Maps backend string (e.g. "ROUTED_TO_REVIEW") to CSS class ("routed")
+function getStampClass(stampText) {
+  const text = stampText.toLowerCase();
+  if (text.includes('extracted')) return 'extracted';
+  if (text.includes('rule')) return 'rule';
+  if (text.includes('approved')) return 'approved';
+  if (text.includes('routed')) return 'routed';
+  if (text.includes('sealed')) return 'sealed';
+  return '';
+}
+
+// Render the API response into the DOM with CSS animations
+function renderTrace(traceData) {
+  ledgerBody.innerHTML = traceData.map((s, i) => `
+    <div class="step" style="animation: fadeIn 0.4s ease forwards; animation-delay: ${i * 0.25}s; opacity: 0;">
+      <div class="stepnum">${String(s.step).padStart(2,'0')}</div>
+      <div class="stepmain">
+        <div class="steptitle">${s.title}</div>
+        <div class="stepdetail">${formatDetail(s.detail)}</div>
+        ${s.rule ? `<div class="rulebox">${s.rule}</div>` : ''}
+        ${s.raw_ocr_preview ? `<div class="rulebox" style="color: var(--textmid); font-size: 11px;"><b>OCR Preview:</b><br>${s.raw_ocr_preview}</div>` : ''}
+      </div>
+      <div class="stamp ${getStampClass(s.stamp)}">${s.stamp}</div>
+    </div>
+  `).join('');
+}
+
+// Execute the API call
+async function runTrace() {
+  if (!currentFile) return;
+  
+  runNum++;
+  runBtn.disabled = true;
+  againBtn.disabled = true;
+  runCount.textContent = `run ${runNum}`;
+  detNote.innerHTML = '<i>Processing via Mistral OCR and Llama 3 extraction...</i>';
+  ledgerBody.innerHTML = '';
+
+  const formData = new FormData();
+  formData.append('case_id', caseId);
+  formData.append('file', currentFile);
+
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/run-trace', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.detail || "API Execution Failed");
+    }
+    
+    const result = await response.json();
+    
+    // Update the UI
+    hashVal.textContent = result.audit_hash;
+    tsVal.textContent = result.timestamp;
+    
+    renderTrace(result.trace);
+    
+    detNote.innerHTML = `Run <b>${runNum}</b> complete. Identical file yields identical decision. Only the hash changed.`;
+
+  } catch (error) {
+    console.error(error);
+    detNote.innerHTML = `<span style="color: var(--sealred);">Error: ${error.message}. Is your FastAPI server running?</span>`;
+  } finally {
+    runBtn.disabled = false;
+    againBtn.disabled = false;
+  }
+}
+
+runBtn.addEventListener('click', runTrace);
+againBtn.addEventListener('click', runTrace);
+</script>
+
+</body>
+</html>
