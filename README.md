@@ -8,7 +8,7 @@ This project demonstrates a production-grade architecture for enterprise AI adop
 * **Frontend:** Vanilla HTML/JS/CSS. An interactive ledger UI that replaces the traditional "chat box" with a strict state-machine visualizer.
 * **Backend:** FastAPI.
 * **Digitization:** Mistral OCR (`mistral-ocr-latest`) for robust document parsing.
-* **Extraction:** Groq (`llama3-70b-8192`) for strict JSON schema coercion.
+* **Extraction:** Groq (`llama-3.3-70b-versatile`) for strict JSON schema coercion.
 * **Rules Engine:** Pure Python.
 
 ## How to Run Locally
